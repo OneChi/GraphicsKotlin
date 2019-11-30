@@ -25,7 +25,9 @@ class Engine : JPanel(){
     var rotation = 0.0
 
 
+
     init {
+
         pane.layout = BorderLayout()
         pane.add(headingSlider, BorderLayout.SOUTH)
         pane.add(pitchSlider, BorderLayout.EAST)
@@ -35,9 +37,9 @@ class Engine : JPanel(){
         frame.isVisible = true
         headingSlider.addChangeListener {this.repaint() }
         pitchSlider.addChangeListener {this.repaint() }
-
     }
 
+    //инициализация квадрата
     fun piramideInit(){
 /*
         piramide.add(
@@ -224,6 +226,7 @@ class Engine : JPanel(){
     }
 
     fun setRotationMatrix(heading : Double, pitching : Double) : Matrix3{
+
         val transformHeading = Matrix3(
             doubleArrayOf(
                 cos(heading), 0.0, -sin(heading),
@@ -242,7 +245,7 @@ class Engine : JPanel(){
 
         return transformHeading.multiply(transformPitching)
     }
-
+    // Нарисовать треугольник
     fun drawTriangle(t: Triangle, img :BufferedImage, zBuffer: DoubleArray, endMatix : Matrix3,color: Color ){
         var v1 = endMatix.transform(t.v1)
         var v2 = endMatix.transform(t.v2)
@@ -263,12 +266,6 @@ class Engine : JPanel(){
         val minY = 0.0.coerceAtLeast(ceil(v1.y.coerceAtMost(v2.y.coerceAtMost(v3.y)))).toInt()
         val maxY = (img.height - 1).toDouble().coerceAtMost(floor(v1.y.coerceAtLeast(v2.y.coerceAtLeast(v3.y)))).toInt()
 
-        /*
-        val minX = Math.max(0.0, Math.ceil(Math.min(v1.x, Math.min(v2.x, v3.x)))).toInt()
-        val maxX = Math.min((img.width - 1).toDouble(), Math.floor(Math.max(v1.x, Math.max(v2.x, v3.x)))).toInt()
-        val minY = Math.max(0.0, Math.ceil(Math.min(v1.y, Math.min(v2.y, v3.y)))).toInt()
-        val maxY = Math.min((img.height - 1).toDouble(), Math.floor(Math.max(v1.y, Math.max(v2.y, v3.y)))).toInt()
-         */
 
         val triangleArea =(v1.y - v3.y) * (v2.x - v3.x) + (v2.y - v3.y) * (v3.x - v1.x)
         for (y in minY..maxY) {
@@ -287,26 +284,32 @@ class Engine : JPanel(){
         }
 
     }
-
+    // Нарисовать проволочную модель треугольника
     fun drawWiresPolygone(t: Triangle,img : BufferedImage, zBuffer: DoubleArray, endMatix: Matrix3, color: Color){
-        val v1 = endMatix.transform(t.v1)
-        val v2 = endMatix.transform(t.v2)
-        val v3 = endMatix.transform(t.v3)
-        // трансляция в центр кадра
-        v1.x += (width / 2).toDouble()
-        v1.y += (height / 2).toDouble()
-        v2.x += (width / 2).toDouble()
-        v2.y += (height / 2).toDouble()
-        v3.x += (width / 2).toDouble()
-        v3.y += (height / 2).toDouble()
+        try{
+            val v1 = endMatix.transform(t.v1)
+            val v2 = endMatix.transform(t.v2)
+            val v3 = endMatix.transform(t.v3)
+            // трансляция в центр кадра
 
-        line(v1,v2,img, Color.red)
-        line(v2,v3,img, Color.PINK)
-        line(v3,v1,img,Color.ORANGE)
+            v1.x += (width / 2).toDouble()
+            v1.y += (height / 2).toDouble()
+            v2.x += (width / 2).toDouble()
+            v2.y += (height / 2).toDouble()
+            v3.x += (width / 2).toDouble()
+            v3.y += (height / 2).toDouble()
+
+            line(v1,v2,img, Color.red)
+            line(v2,v3,img, Color.PINK)
+            line(v3,v1,img,Color.ORANGE)
+
+
+        } catch (e : Exception){
+
+        }
 
     }
-
-
+    // нарисовать линию
     fun line(v1 : Vertex, v2 : Vertex, img: BufferedImage,color : Color) {
         var x0 = v1.x.toInt()
         var y0 = v1.y.toInt()
@@ -326,23 +329,36 @@ class Engine : JPanel(){
             y0 = y1.also { y1 = y0 }
         }
         var dx = x1-x0;
-        var dy = y1-y0;
-        var derror2 = abs(dy)*2;
-        var error2 = 0;
+        var dy = y1-y0
+        var derror2 = abs(dy / dx.toFloat());
+        var error2 = 0f;
         var y = y0;
+
         for (x in x0..x1) {
             if (steep) {
-                img.setRGB(y, x, color.rgb)
+                if (x >= 0 && x < img.height && y >= 0 && y < img.width) {
+                    img.setRGB(y, x, color.rgb)
+                }
             } else {
-                img.setRGB(x, y, color.rgb)
+                if (y >= 0 && y < img.height && x >= 0 && x < img.width) {
+                    img.setRGB(x, y, color.rgb)
+                }
             }
             error2 += derror2
 
-            if (error2 > dx) {
+            /*if (error2 > dx) {
                 y += (if(y1>y0)1 else -1)
-                error2 -= dx*2;
+                error2 -= dx*2;*/
+            if (error2 > 0.5) {
+                y += if (y1 > y0) 1 else -1
+                error2 -= 1.0f
+
             }
         }
+    }
+    // Нарисовать точку
+    fun drawDot(v1 : Vertex, img : BufferedImage, color : Color){
+        // TODO: доделать ф. отрисовки точки
     }
 
 }
@@ -359,5 +375,22 @@ class Engine : JPanel(){
 А) простая закраска
 Б) закраска методом гуго?
 В) закраска методом фонга?
+
+
+	private Vector3f barycentric(Vector2f[] pts, Vector2f P, Vector3f ptso[]) {
+		Vector3f u = mult(
+				new Vector3f(sub(pts[2], pts[0]).getX(), sub(pts[1], pts[0]).getX(), sub(pts[0], P).getX()),
+				new Vector3f(sub(pts[2], pts[0]).getY(), sub(pts[1], pts[0]).getY(), sub(pts[0], P).getY()));
+	    if (abs(u.getZ()) > 1) {
+	    	return new Vector3f(-1,1,1); // triangle is degenerate, in this case return smth with negative coordinates
+	    }
+	    Vector3f bcScreen = new Vector3f(1.0f - (u.getX()+u.getY())/u.getZ(), u.getY()/u.getZ(), u.getX()/u.getZ());
+	    Vector3f tmp = new Vector3f(bcScreen.getX() / ptso[0].getZ(), bcScreen.getY() / ptso[1].getZ(), bcScreen.getZ() / ptso[2].getZ());
+	    float Pz = 1 / (tmp.getX() + tmp.getY() + tmp.getZ());
+	    Vector3f bsClip = mult(tmp, Pz);
+	    return bsClip;
+	}
+
+
 
 */

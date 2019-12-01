@@ -1,6 +1,7 @@
 package ru.vanchikov.laboratory1.Logic
 
-import Mathematic.Matrix3
+import ru.vanchikov.laboratory1.Mathematic.matrices.Matrix3
+import ru.vanchikov.laboratory1.Mathematic.vectors.Vector3
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Graphics
@@ -27,7 +28,6 @@ class Engine : JPanel(){
 
 
     init {
-
         pane.layout = BorderLayout()
         pane.add(headingSlider, BorderLayout.SOUTH)
         pane.add(pitchSlider, BorderLayout.EAST)
@@ -82,45 +82,45 @@ class Engine : JPanel(){
         //A
         piramide.add(
             Triangle(
-                Vertex(-100.0, 100.0, 100.0),
-                Vertex(100.0, 100.0, 100.0),
-                Vertex(-100.0, 100.0, -100.0),
+                Vector3(-100.0, 100.0, 100.0),
+                Vector3(100.0, 100.0, 100.0),
+                Vector3(-100.0, 100.0, -100.0),
                 Color.RED
             )
         )
         //B
         piramide.add(
             Triangle(
-                Vertex(100.0, 100.0, 100.0),
-                Vertex(100.0, 100.0, -100.0),
-                Vertex(-100.0, 100.0, -100.0),
+                Vector3(100.0, 100.0, 100.0),
+                Vector3(100.0, 100.0, -100.0),
+                Vector3(-100.0, 100.0, -100.0),
                 Color.GREEN
             )
         )
         //C
         piramide.add(
             Triangle(
-                Vertex(100.0, -100.0, 100.0),
-                Vertex(100.0, 100.0, -100.0),
-                Vertex(100.0, 100.0, 100.0),
+                Vector3(100.0, -100.0, 100.0),
+                Vector3(100.0, 100.0, -100.0),
+                Vector3(100.0, 100.0, 100.0),
                 Color.BLUE
             )
         )
         //D
         piramide.add(
             Triangle(
-                Vertex(100.0, -100.0, 100.0),
-                Vertex(100.0, -100.0, -100.0),
-                Vertex(100.0, 100.0, -100.0),
+                Vector3(100.0, -100.0, 100.0),
+                Vector3(100.0, -100.0, -100.0),
+                Vector3(100.0, 100.0, -100.0),
                 Color.DARK_GRAY
             )
         )
         //E
         piramide.add(
             Triangle(
-                Vertex(-100.0, -100.0, 100.0),
-                Vertex(100.0, -100.0, 100.0),
-                Vertex(-100.0, 100.0, 100.0),
+                Vector3(-100.0, -100.0, 100.0),
+                Vector3(100.0, -100.0, 100.0),
+                Vector3(-100.0, 100.0, 100.0),
                 Color.CYAN
             )
         )
@@ -128,63 +128,63 @@ class Engine : JPanel(){
         //F
         piramide.add(
             Triangle(
-                Vertex(100.0, -100.0, 100.0),
-                Vertex(100.0, 100.0, 100.0),
-                Vertex(-100.0, 100.0, 100.0),
+                Vector3(100.0, -100.0, 100.0),
+                Vector3(100.0, 100.0, 100.0),
+                Vector3(-100.0, 100.0, 100.0),
                 Color.PINK
             )
         )
         //G
         piramide.add(
             Triangle(
-                Vertex(-100.0, -100.0, 100.0),
-                Vertex(-100.0, 100.0, 100.0),
-                Vertex(-100.0, -100.0, -100.0),
+                Vector3(-100.0, -100.0, 100.0),
+                Vector3(-100.0, 100.0, 100.0),
+                Vector3(-100.0, -100.0, -100.0),
                 Color.YELLOW
             )
         )
         //H
         piramide.add(
             Triangle(
-                Vertex(-100.0, 100.0, 100.0),
-                Vertex(-100.0, 100.0, -100.0),
-                Vertex(-100.0, -100.0, -100.0),
+                Vector3(-100.0, 100.0, 100.0),
+                Vector3(-100.0, 100.0, -100.0),
+                Vector3(-100.0, -100.0, -100.0),
                 Color.magenta
             )
         )
         //I
         piramide.add(
             Triangle(
-                Vertex(-100.0, 100.0, -100.0),
-                Vertex(100.0, 100.0, -100.0),
-                Vertex(-100.0, -100.0, -100.0),
+                Vector3(-100.0, 100.0, -100.0),
+                Vector3(100.0, 100.0, -100.0),
+                Vector3(-100.0, -100.0, -100.0),
                 Color.ORANGE
             )
         )
         //J
         piramide.add(
             Triangle(
-                Vertex(-100.0, -100.0, -100.0),
-                Vertex(100.0, 100.0, -100.0),
-                Vertex(100.0, -100.0, -100.0),
+                Vector3(-100.0, -100.0, -100.0),
+                Vector3(100.0, 100.0, -100.0),
+                Vector3(100.0, -100.0, -100.0),
                 Color.gray
             )
         )
         //K
         piramide.add(
             Triangle(
-                Vertex(100.0, -100.0, 100.0),
-                Vertex(-100.0, -100.0, 100.0),
-                Vertex(-100.0, -100.0, -100.0),
+                Vector3(100.0, -100.0, 100.0),
+                Vector3(-100.0, -100.0, 100.0),
+                Vector3(-100.0, -100.0, -100.0),
                 Color.lightGray
             )
         )
         //L
         piramide.add(
             Triangle(
-                Vertex(-100.0, -100.0, -100.0),
-                Vertex(100.0, -100.0, -100.0),
-                Vertex(100.0, -100.0, 100.0),
+                Vector3(-100.0, -100.0, -100.0),
+                Vector3(100.0, -100.0, -100.0),
+                Vector3(100.0, -100.0, 100.0),
                 Color.PINK
             )
         )
@@ -194,10 +194,13 @@ class Engine : JPanel(){
 
 
     override fun paintComponent(g: Graphics) {
+        render(g)
+    }
+
+    fun render(g : Graphics){
         val heading = Math.toRadians(headingSlider.value.toDouble())
         val pitching = Math.toRadians(pitchSlider.value.toDouble())
-        val endMatix = setRotationMatrix(heading,pitching)
-        val g2 = g as Graphics
+        val worldMatrix = setRotationMatrix(heading,pitching)
         val img = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         val zBuffer = DoubleArray(img.width * img.height)
         // initialize array with extremely far away depths
@@ -205,51 +208,49 @@ class Engine : JPanel(){
             zBuffer[q] = java.lang.Double.NEGATIVE_INFINITY
         }
         //BACKGROUND
-        g2.color = Color.BLACK
-        g2.fillRect(0, 0, width, height)
+        g.color = Color.BLACK
+        g.fillRect(0, 0, width, height)
+
 
         var mode : Int = 1
         when(mode){
             0 -> {
                 for (t in piramide)
-                    drawTriangle(t, img, zBuffer, endMatix,Color.ORANGE)
-                g2.drawImage(img, 0, 0, null)
+                    drawTriangle(t, img, zBuffer, worldMatrix,Color.ORANGE)
+                g.drawImage(img, 0, 0, null)
             }
             1 -> {
                 //WIRES MODEL
                 for (t in piramide)
-                    drawWiresPolygone(t,img,zBuffer,endMatix,color = Color.red)
-                g2.drawImage(img,0,0,null)
+                    drawWiresPolygone(t,img,zBuffer,worldMatrix,color = Color.red)
+                g.drawImage(img,0,0,null)
             }
         }
 
+
     }
 
-    fun setRotationMatrix(heading : Double, pitching : Double) : Matrix3{
+    fun setRotationMatrix(heading : Double, pitching : Double) : Matrix3 {
 
         val transformHeading = Matrix3(
-            doubleArrayOf(
-                cos(heading), 0.0, -sin(heading),
-                0.0,          1.0, 0.0,
-                sin(heading), 0.0, cos(heading)
-            )
+            cos(heading), 0.0, -sin(heading),
+            0.0, 1.0, 0.0,
+            sin(heading), 0.0, cos(heading)
         )
 
         val transformPitching= Matrix3(
-            doubleArrayOf(
-                1.0 , 0.0, 0.0 ,
-                0.0,cos(pitching),sin(pitching),
-                0.0,-sin(pitching) , cos(pitching)
-            )
+            1.0, 0.0, 0.0,
+            0.0, cos(pitching), sin(pitching),
+            0.0, -sin(pitching), cos(pitching)
         )
 
-        return transformHeading.multiply(transformPitching)
+        return transformHeading.mult(transformPitching)
     }
     // Нарисовать треугольник
-    fun drawTriangle(t: Triangle, img :BufferedImage, zBuffer: DoubleArray, endMatix : Matrix3,color: Color ){
-        var v1 = endMatix.transform(t.v1)
-        var v2 = endMatix.transform(t.v2)
-        var v3 = endMatix.transform(t.v3)
+    fun drawTriangle(triangle: Triangle, img :BufferedImage, zBuffer: DoubleArray, worldMatix : Matrix3, color: Color ){
+        var v1 = worldMatix.mult(triangle.v1)
+        var v2 = worldMatix.mult(triangle.v2)
+        var v3 = worldMatix.mult(triangle.v3)
 
         // трансляция в центр кадра
         v1.x += (width / 2).toDouble()
@@ -277,7 +278,7 @@ class Engine : JPanel(){
                     val depth = b1 * v1.z + b2 * v2.z + b3 * v3.z
                     val zIndex = y * img.width + x
                     if ((zBuffer[zIndex] < depth)) {
-                        img.setRGB(x, y, t.color.rgb)
+                        img.setRGB(x, y, triangle.color.rgb)
                         zBuffer[zIndex] = depth
                     } }
             }
@@ -285,11 +286,11 @@ class Engine : JPanel(){
 
     }
     // Нарисовать проволочную модель треугольника
-    fun drawWiresPolygone(t: Triangle,img : BufferedImage, zBuffer: DoubleArray, endMatix: Matrix3, color: Color){
+    fun drawWiresPolygone(t: Triangle, img : BufferedImage, zBuffer: DoubleArray, endMatix: Matrix3, color: Color){
         try{
-            val v1 = endMatix.transform(t.v1)
-            val v2 = endMatix.transform(t.v2)
-            val v3 = endMatix.transform(t.v3)
+            val v1 = endMatix.mult(t.v1)
+            val v2 = endMatix.mult(t.v2)
+            val v3 = endMatix.mult(t.v3)
             // трансляция в центр кадра
 
             v1.x += (width / 2).toDouble()
@@ -310,7 +311,7 @@ class Engine : JPanel(){
 
     }
     // нарисовать линию
-    fun line(v1 : Vertex, v2 : Vertex, img: BufferedImage,color : Color) {
+    fun line(v1 : Vector3, v2 : Vector3, img: BufferedImage, color : Color) {
         var x0 = v1.x.toInt()
         var y0 = v1.y.toInt()
         var z0 = v1.z.toInt()
@@ -331,7 +332,7 @@ class Engine : JPanel(){
         var dx = x1-x0;
         var dy = y1-y0
         var derror2 = abs(dy / dx.toFloat());
-        var error2 = 0f;
+        var error2 = 0.0;
         var y = y0;
 
         for (x in x0..x1) {
@@ -351,13 +352,13 @@ class Engine : JPanel(){
                 error2 -= dx*2;*/
             if (error2 > 0.5) {
                 y += if (y1 > y0) 1 else -1
-                error2 -= 1.0f
+                error2 -= 1.0
 
             }
         }
     }
     // Нарисовать точку
-    fun drawDot(v1 : Vertex, img : BufferedImage, color : Color){
+    fun drawDot(v1 : Vector3, img : BufferedImage, color : Color){
         // TODO: доделать ф. отрисовки точки
     }
 

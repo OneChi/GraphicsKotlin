@@ -1,6 +1,6 @@
-package ru.vanchikov.laboratory1.Mathematic.matrices
+package ru.vanchikov.laboratory1.mathematic.matrix
 
-import ru.vanchikov.laboratory1.Mathematic.vectors.Vector3
+import ru.vanchikov.laboratory1.mathematic.vectors.Vector3
 
 
 class Matrix3 {

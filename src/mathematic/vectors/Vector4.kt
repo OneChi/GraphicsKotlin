@@ -1,5 +1,6 @@
-package ru.vanchikov.laboratory1.Mathematic.vectors
+package ru.vanchikov.laboratory1.mathematic.vectors
 
+import ru.vanchikov.laboratory1.mathematic.vectors.Vector3
 import java.io.Serializable
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -75,26 +76,6 @@ class Vector4 : Serializable {
 
         fun dot(q2: Vector4): Double {
             return (this.x * q2.x) + (this.y * q2.y) + (this.z * q2.z) + (this.w * q2.w)
-        }
-
-        fun mult(scalar: Double): Vector4 {
-            return Vector4(this.x * scalar, this.y * scalar, this.z * scalar, this.w * scalar)
-        }
-
-        fun mult(q2: Vector4): Vector4 {
-            val w: Double = (this.w * q2.w) - (this.x * q2.x) - (this.y * q2.y) - (this.z * q2.z)
-            val x: Double = (this.w * q2.x) + (this.x * q2.w) + (this.y * q2.z) - this.z * q2.y
-            val y: Double = (this.w * q2.y - this.x * q2.z) + (this.y * q2.w) + (this.z * q2.x)
-            val z: Double = this.w * q2.z + this.x * q2.y - this.y * q2.x + this.z * q2.w
-            return Vector4(x, y, z, w)
-        }
-
-        fun mult(v: Vector3): Vector4 {
-            val w: Double = (-this.x * v.x) - (this.y * v.y) - (this.z * v.z)
-            val x: Double = this.w * v.x + this.y * v.z - this.z * v.y
-            val y: Double = this.w * v.y - this.x * v.z + this.z * v.x
-            val z: Double = this.w * v.z + this.x * v.y - this.y * v.x
-            return Vector4(x, y, z, w)
         }
 
 }

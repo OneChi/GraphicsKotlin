@@ -1,6 +1,7 @@
-package ru.vanchikov.laboratory1.Mathematic.matrices
+package ru.vanchikov.laboratory1.mathematic.matrix
 
-import ru.vanchikov.laboratory1.Mathematic.vectors.Vector4
+
+import ru.vanchikov.laboratory1.mathematic.vectors.Vector4
 import java.io.Serializable
 
 

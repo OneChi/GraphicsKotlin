@@ -1,7 +1,7 @@
 package ru.vanchikov.laboratory1
 
 
-import ru.vanchikov.laboratory1.Logic.Engine
+import ru.vanchikov.laboratory1.logic.Engine
 
 
 fun main() {

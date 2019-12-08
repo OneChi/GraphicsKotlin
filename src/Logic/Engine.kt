@@ -1,7 +1,8 @@
-package ru.vanchikov.laboratory1.Logic
+package ru.vanchikov.laboratory1.logic
 
-import ru.vanchikov.laboratory1.Mathematic.matrices.Matrix3
-import ru.vanchikov.laboratory1.Mathematic.vectors.Vector3
+
+import ru.vanchikov.laboratory1.mathematic.matrix.Matrix3
+import ru.vanchikov.laboratory1.mathematic.vectors.*
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Graphics
@@ -15,7 +16,8 @@ import kotlin.math.*
 
 
 // panel to display render results
-class Engine : JPanel(){
+class Engine : JPanel() , Runnable{
+    private var cameraClass = CameraClass()
     val frame = JFrame()
     val pane = frame.contentPane
     val piramide = ArrayList<Triangle>()
@@ -26,8 +28,9 @@ class Engine : JPanel(){
     var rotation = 0.0
 
 
-
     init {
+
+
         pane.layout = BorderLayout()
         pane.add(headingSlider, BorderLayout.SOUTH)
         pane.add(pitchSlider, BorderLayout.EAST)
@@ -35,9 +38,13 @@ class Engine : JPanel(){
         piramideInit()
         frame.setSize(400, 400)
         frame.isVisible = true
-        headingSlider.addChangeListener {this.repaint() }
-        pitchSlider.addChangeListener {this.repaint() }
+
+
+        Thread(this).start()
     }
+
+
+
 
     //инициализация квадрата
     fun piramideInit(){
@@ -201,18 +208,27 @@ class Engine : JPanel(){
         val heading = Math.toRadians(headingSlider.value.toDouble())
         val pitching = Math.toRadians(pitchSlider.value.toDouble())
         val worldMatrix = setRotationMatrix(heading,pitching)
+        /*
+            СameraClass.getWorldMatrix()
+        cameraClass.setxRotation(heading)
+        cameraClass.setyRotation(pitching)
+         */
         val img = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         val zBuffer = DoubleArray(img.width * img.height)
         // initialize array with extremely far away depths
         for (q in zBuffer.indices) {
             zBuffer[q] = java.lang.Double.NEGATIVE_INFINITY
         }
+
+
+
+
         //BACKGROUND
         g.color = Color.BLACK
         g.fillRect(0, 0, width, height)
 
 
-        var mode : Int = 1
+        var mode : Int = 0
         when(mode){
             0 -> {
                 for (t in piramide)
@@ -247,10 +263,10 @@ class Engine : JPanel(){
         return transformHeading.mult(transformPitching)
     }
     // Нарисовать треугольник
-    fun drawTriangle(triangle: Triangle, img :BufferedImage, zBuffer: DoubleArray, worldMatix : Matrix3, color: Color ){
-        var v1 = worldMatix.mult(triangle.v1)
-        var v2 = worldMatix.mult(triangle.v2)
-        var v3 = worldMatix.mult(triangle.v3)
+    fun drawTriangle(Triangle: Triangle, img :BufferedImage, zBuffer: DoubleArray, worldMatix : Matrix3, color: Color ){
+        var v1 = worldMatix.mult(Triangle.v1)
+        var v2 = worldMatix.mult(Triangle.v2)
+        var v3 = worldMatix.mult(Triangle.v3)
 
         // трансляция в центр кадра
         v1.x += (width / 2).toDouble()
@@ -260,7 +276,7 @@ class Engine : JPanel(){
         v3.x += (width / 2).toDouble()
         v3.y += (height / 2).toDouble()
 
-        // compute rectangular bounds for triangle
+        // compute rectangular bounds for Triangle
 
         val minX = 0.0.coerceAtLeast(ceil(v1.x.coerceAtMost(v2.x.coerceAtMost(v3.x)))).toInt()
         val maxX = (img.width - 1).toDouble().coerceAtMost(floor(v1.x.coerceAtLeast(v2.x.coerceAtLeast(v3.x)))).toInt()
@@ -268,17 +284,17 @@ class Engine : JPanel(){
         val maxY = (img.height - 1).toDouble().coerceAtMost(floor(v1.y.coerceAtLeast(v2.y.coerceAtLeast(v3.y)))).toInt()
 
 
-        val triangleArea =(v1.y - v3.y) * (v2.x - v3.x) + (v2.y - v3.y) * (v3.x - v1.x)
+        val TriangleArea =(v1.y - v3.y) * (v2.x - v3.x) + (v2.y - v3.y) * (v3.x - v1.x)
         for (y in minY..maxY) {
             for (x in minX..maxX) {
-                val b1 = ((y - v3.y) * (v2.x - v3.x) + (v2.y - v3.y) * (v3.x - x)) / triangleArea
-                val b2 = ((y - v1.y) * (v3.x - v1.x) + (v3.y - v1.y) * (v1.x - x)) / triangleArea
-                val b3 = ((y - v2.y) * (v1.x - v2.x) + (v1.y - v2.y) * (v2.x - x)) / triangleArea
+                val b1 = ((y - v3.y) * (v2.x - v3.x) + (v2.y - v3.y) * (v3.x - x)) / TriangleArea
+                val b2 = ((y - v1.y) * (v3.x - v1.x) + (v3.y - v1.y) * (v1.x - x)) / TriangleArea
+                val b3 = ((y - v2.y) * (v1.x - v2.x) + (v1.y - v2.y) * (v2.x - x)) / TriangleArea
                 if (b1 in 0.0..1.0 && b2 in 0.0..1.0 && b3 in 0.0..1.0) {
                     val depth = b1 * v1.z + b2 * v2.z + b3 * v3.z
                     val zIndex = y * img.width + x
                     if ((zBuffer[zIndex] < depth)) {
-                        img.setRGB(x, y, triangle.color.rgb)
+                        img.setRGB(x, y, Triangle.color.rgb)
                         zBuffer[zIndex] = depth
                     } }
             }
@@ -331,7 +347,7 @@ class Engine : JPanel(){
         }
         var dx = x1-x0;
         var dy = y1-y0
-        var derror2 = abs(dy / dx.toFloat());
+        var derror2 = abs(dy / dx.toDouble());
         var error2 = 0.0;
         var y = y0;
 
@@ -362,36 +378,128 @@ class Engine : JPanel(){
         // TODO: доделать ф. отрисовки точки
     }
 
+
+    // MAIN THREAD
+    override fun run() {
+        while (true) {
+
+            this.repaint()
+        }
+    }
+
+/*
+    private fun triangle(
+        pts: Array<Vector2>,
+        buf: Image,
+        deph: DoubleArray,
+        uvs: Array<Vector2>,
+        bilinear: Boolean,
+        ptso: Array<Vector3>,
+        normals: Array<Vector3>,
+        worldCoords: Array<Vector3>,
+        ltype: LightModel,
+        lights: Array<PointLight>,
+        specularIntensity: Double,
+        specularPower: Double,
+        cameraPos: Vector3,
+        wNormals: Array<Vector3>,
+        useTexture: Boolean
+    ) {
+        val v1: Vector3 = mult(
+            subMath(worldCoords[0], worldCoords[1]),
+            subMath(worldCoords[2], worldCoords[1])
+        ).getNormalVector()
+        if (dot(subMath(cameraPos, worldCoords[0]).getNormalVector(), v1) > 0) {
+            return
+        }
+        val n: Vector3 = addVect(wNormals[0], addVect(wNormals[1], wNormals[2])).getNormalVector()
+        var gouraud: Array<Vector3?>? = null
+        if (ltype === LightModel.GOURAUD) {
+            gouraud = arrayOfNulls<Vector3>(lights.size * 3)
+            for (i in lights.indices) {
+                for (j in 0..2) {
+                    gouraud[i * 3 + j] = lights[i].getSimpleLightModelColor(
+                        worldCoords[j], wNormals[j],
+                        specularIntensity, specularPower, cameraPos
+                    )
+                }
+            }
+        }
+        val w: Int = buf.width
+        val h: Int = buf.height
+        val xmin =
+            Math.max(0, Math.floor(w * min(min(pts[0].x, pts[1].x), pts[2].x)).toInt())
+        val xmax =
+            Math.min(w, Math.floor(w * max(max(pts[0].x, pts[1].x), pts[2].x)).toInt() + 1)
+        val ymin =
+            Math.max(0, Math.floor(h * min(min(pts[0].y, pts[1].y), pts[2].y)).toInt())
+        val ymax =
+            Math.min(h, Math.floor(h * max(max(pts[0].y, pts[1].y), pts[2].y)).toInt() + 1)
+        for (x in xmin until xmax) {
+            for (y in ymin until ymax) {
+                val bc: Vector3 = barycentric(pts, Vector2(x / w.toDouble(), y / h.toDouble()), ptso)
+                if (bc.x < 0 || bc.y < 0 || bc.z < 0) {
+                    continue
+                }
+                val d: Double = deph[0] * bc.x + deph[1] * bc.y + deph[2] * bc.z
+                if (buf.getDeph(x, y) < d) {
+                    val uv: Vector2 = addVect(
+                        mult(uvs[0], bc.x),
+                        addVect(mult(uvs[1], bc.y), mult(uvs[2], bc.z))
+                    )
+                    var texColor: Vector3? = null
+                    if (useTexture) {
+                        texColor = if (bilinear) {
+                            tex.getBilinear(uv)
+                        } else {
+                            tex.getNearest(uv)
+                        }
+                    } else {
+                        texColor = Vector3(0.5, 0.5, 0.5)
+                    }
+                    val wPos: Vector3 = addVect(
+                        mult(worldCoords[0], bc.x),
+                        addVect(mult(worldCoords[1], bc.y), mult(worldCoords[2], bc.z))
+                    )
+                    lateinit var lightColor: Vector3
+                    if (ltype === LightModel.SIMPLE) {
+                        lightColor = Vector3(0.0, 0.0, 0.0)
+                        for (i in lights.indices) {
+                            val lc: Vector3 = lights[i]
+                                .getSimpleLightModelColor(wPos, n, specularIntensity, specularPower, cameraPos)
+                            lightColor = add(lightColor, lc)
+                        }
+                    } else if (ltype === LightModel.GOURAUD) {
+                        lightColor = Vector3(0.0, 0.0, 0.0)
+                        for (i in lights.indices) {
+                            val lc: Vector3 = addVect(
+                                mult(gouraud!![i * 3], bc.x),
+                                addVect(mult(gouraud!![i * 3 + 1], bc.y), mult(gouraud!![i * 3 + 2], bc.z))
+                            )
+                            lightColor = addVect(lightColor, lc)
+                        }
+                    } else if (ltype === LightModel.PHONG) {
+                        val nn: Vector3 = addVect(
+                            mult(wNormals[0], bc.x),
+                            addVect(mult(wNormals[1], bc.y), mult(wNormals[2], bc.z))
+                        )
+                        lightColor = Vector3(0.0, 0.0, 0.0)
+                        for (i in lights.indices) {
+                            val lc: Vector3 = lights[i]
+                                .getSimpleLightModelColor(wPos, nn, specularIntensity, specularPower, cameraPos)
+                            lightColor = addVect(lightColor, lc)
+                        }
+                    }
+                    buf.setColor(x, y, multSimple(lightColor, texColor))
+                    buf.setDeph(x, y, d)
+                }
+            }
+        }
+    }
+*/
+
+
+
 }
 
 
-
-/*
-
-Задать трехмерную модель точками и сделать ее вращение, масштабирование, перемещение
-Освещение не менее 3 прожекторами
-Несколько режимов работы
-1)Проволочная модель
-2)Закрашенная модель
-А) простая закраска
-Б) закраска методом гуго?
-В) закраска методом фонга?
-
-
-	private Vector3f barycentric(Vector2f[] pts, Vector2f P, Vector3f ptso[]) {
-		Vector3f u = mult(
-				new Vector3f(sub(pts[2], pts[0]).getX(), sub(pts[1], pts[0]).getX(), sub(pts[0], P).getX()),
-				new Vector3f(sub(pts[2], pts[0]).getY(), sub(pts[1], pts[0]).getY(), sub(pts[0], P).getY()));
-	    if (abs(u.getZ()) > 1) {
-	    	return new Vector3f(-1,1,1); // triangle is degenerate, in this case return smth with negative coordinates
-	    }
-	    Vector3f bcScreen = new Vector3f(1.0f - (u.getX()+u.getY())/u.getZ(), u.getY()/u.getZ(), u.getX()/u.getZ());
-	    Vector3f tmp = new Vector3f(bcScreen.getX() / ptso[0].getZ(), bcScreen.getY() / ptso[1].getZ(), bcScreen.getZ() / ptso[2].getZ());
-	    float Pz = 1 / (tmp.getX() + tmp.getY() + tmp.getZ());
-	    Vector3f bsClip = mult(tmp, Pz);
-	    return bsClip;
-	}
-
-
-
-*/
